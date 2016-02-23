@@ -16,4 +16,6 @@ void main(void) {
 	set_interrupt_enable_flag();
 
 	serial_port_write_line("Third part done\n");
+
+	while(1);	
 }
