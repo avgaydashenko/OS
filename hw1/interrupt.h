@@ -59,7 +59,7 @@ void send_end_of_interrupt(uint8_t is_master);
 void idt_init();
 void descriptor_set(uint8_t id, uint64_t handler, uint8_t flags);
 
-uint64_t handler_empty;
-uint64_t handler_pop;
+void handler_empty();
+void handler_pop();
 
 #endif /*__INTERRUPT_H__*/

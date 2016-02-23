@@ -7,9 +7,6 @@
 static struct idt_descriptor descriptor[INTERRUPT_COUNT];
 static struct idt_ptr idt;
 
-extern uint64_t handler_empty;
-extern uint64_t handler_pop;
-
 void interrupt_init() {
 
 	out8(MASTER_PIC_COMMAND, LEGACY_PIC_INIT);
@@ -40,13 +37,13 @@ void idt_init() {
 	idt.base = (uint64_t) &descriptor;
 
 	for (int i = 0; i < INTERRUPT_COUNT; i++)
-		descriptor_set(i, handler_empty,
+		descriptor_set(i, (uint64_t) &handler_empty,
 			INTERRUPT_FLAG_PRESENT | INTERRUPT_FLAG_INT64);
 
 	uint8_t interrupt_errors[] = {8, 10, 11, 12, 13, 14, 17, 30};
 
 	for (int i = 0; i < 8; i++)
-		descriptor_set(interrupt_errors[i], handler_pop,
+		descriptor_set(interrupt_errors[i], (uint64_t) &handler_pop,
 			INTERRUPT_FLAG_PRESENT | INTERRUPT_FLAG_INT64);
 
 	set_idt(&idt);

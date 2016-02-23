@@ -16,6 +16,6 @@
 void pit_init();
 void pit_handler();
 
-uint64_t handler_pit;
+void handler_pit();
 
 #endif /* __PIT_H__ */
