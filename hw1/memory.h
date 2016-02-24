@@ -25,7 +25,7 @@ static inline void *kernel_virt(uintptr_t addr)
 { return (void *)KERNEL_VIRT(addr); }
 
 #define bit(x) (1ll << (x))
-#define get_bits(x, l, r) (x >> l) & (bit(r) - 1)
+#define get_bits(x, l, r) (((x) >> (l)) & (bit((r) - (l)) - 1))
 
 #endif /*__ASM_FILE__*/
 

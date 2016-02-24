@@ -4,6 +4,7 @@ void serial_port_init() {
 
 	out8(LINE_CONTROL_REGISTER, 3); // 3_{10} = 11_{2}, т.е. биты 0 и 1 LCR теперь
 									// равны 1 => 8 бит данных в формате кадра
+	out8(INTERRUPT_ENABLE_REGISTER, 0);
 }
 
 void serial_port_write_char(char c) {
