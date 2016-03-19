@@ -1,5 +1,6 @@
 #include "interrupt.h"
 #include "memory.h"
+#include "util.h"
 
 #define MASK 0b11111111
 

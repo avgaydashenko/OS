@@ -1,6 +1,8 @@
 #ifndef __MEMORY_H__
 #define __MEMORY_H__
 
+#define BOOTMEM_SIZE      (4ull * 1024ull * 1024ull * 1024ull) // 4GB
+
 #define PAGE_BITS         12
 #define PAGE_SIZE         (1 << 12)
 #define PAGE_MASK         (PAGE_SIZE - 1)
@@ -13,6 +15,8 @@
 
 #define KERNEL_PHYS(x)    ((x) - KERNEL_BASE)
 #define KERNEL_VIRT(x)    ((x) + KERNEL_BASE)
+#define PA(x)             ((x) - HIGH_BASE)
+#define VA(x)             ((x) + HIGH_BASE)
 
 #ifndef __ASM_FILE__
 
@@ -24,8 +28,14 @@ static inline uintptr_t kernel_phys(void *addr)
 static inline void *kernel_virt(uintptr_t addr)
 { return (void *)KERNEL_VIRT(addr); }
 
-#define bit(x) (1ll << (x))
-#define get_bits(x, l, r) (((x) >> (l)) & (bit((r) - (l)) - 1))
+typedef uintptr_t phys_t;
+typedef uintptr_t virt_t;
+
+static inline phys_t pa(const void *addr)
+{ return PA((virt_t)addr); }
+
+static inline void *va(phys_t addr)
+{ return (void *)VA(addr); }
 
 #endif /*__ASM_FILE__*/
 

@@ -5,6 +5,7 @@
 #include "interrupt.h"
 #include "serial_port.h"
 #include "memory.h"
+#include "util.h"
 
 #define PIT_PORT_CONTROL 0x43
 #define PIT_PORT_DATA	 0x40
