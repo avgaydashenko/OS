@@ -5,9 +5,9 @@ void allocator_init() {
     get_memory_map();
     print_memory_map();
 
-    size_t  max_mem_size = ((memory_map[memory_map_size - 1].address + memory_map[memory_map_size - 1].length));
+    size_t max_mem_size = ((memory_map[memory_map_size - 1].address + memory_map[memory_map_size - 1].length));
 
-    boot_size = max_mem_size/(2<<20)*PAGE_SIZE*2;
+    boot_size = (max_mem_size/(2<<20))*PAGE_SIZE*2;
     size_t descriptors_size = max_mem_size/PAGE_SIZE;
 
     max_order = 1;
@@ -25,6 +25,7 @@ void allocator_init() {
                 boot_mem = va(memory_map[i].address);
                 memory_map[i].address += boot_size;
                 memory_map[i].length -= boot_size;
+                break;
             }
         }
     }
@@ -122,7 +123,7 @@ void free_page(void* page_addr, int k) {
 void* get_mem(size_t mem_size, size_t alignment) {
     char* res = boot_mem;
     if (alignment != 0) {
-        res = (char *) ((((uint64_t)res + 1) / alignment) * alignment);
+        res = (char *) ((((uint64_t)res + 1) / (alignment)) * alignment);
     }
     boot_size -= ((uint64_t)res - (uint64_t)boot_mem) + mem_size;
     boot_mem = res + mem_size;
