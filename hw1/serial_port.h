@@ -13,5 +13,6 @@
 void serial_port_init();
 void serial_port_write_char(char c);
 void serial_port_write_line(char* s);
+void serial_port_write_num(uint64_t x);
 
 #endif /* __SERIAL_PORT_H__ */

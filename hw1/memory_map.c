@@ -77,3 +77,26 @@ void get_memory_map() {
 
     serial_port_write_line("Get memory map: successful.\n");
 }
+
+void print_memory_map() {
+
+    serial_port_write_line("MEMORY MAP:\n");
+
+    for (size_t i = 0; i < memory_map_size; ++i) {
+        serial_port_write_num((unsigned long long) memory_map[i].address);
+        serial_port_write_line(" - ");
+        serial_port_write_num((unsigned long long int) (memory_map[i].address + memory_map[i].length - 1));
+        serial_port_write_line(", ");
+        
+        if (memory_map[i].type == 1) 
+            serial_port_write_line("available");
+        else if (memory_map[i].type == 0)
+            serial_port_write_line("kernel");
+        else
+            serial_port_write_line("reserved");
+
+        serial_port_write_line("\n");
+    }
+
+    serial_port_write_line("Print memory map: successful.\n");
+}

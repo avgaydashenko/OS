@@ -3,6 +3,7 @@
 void allocator_init() {
 
     get_memory_map();
+    print_memory_map();
 
     size_t  max_mem_size = ((memory_map[memory_map_size - 1].address + memory_map[memory_map_size - 1].length));
 

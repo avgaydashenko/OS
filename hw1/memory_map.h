@@ -24,5 +24,6 @@ extern size_t memory_map_size;
 extern struct memory_map_entry memory_map[];
 
 void get_memory_map();
+void print_memory_map();
 
 #endif /* __MEMORY_MAP_H__ */
