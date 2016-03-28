@@ -123,7 +123,7 @@ void free_page(void* page_addr, int k) {
 void* get_mem(size_t mem_size, size_t alignment) {
     char* res = boot_mem;
     if (alignment != 0) {
-        res = (char *) ((((uint64_t)res + 1) / (alignment)) * alignment);
+        res = (char *) ((((uint64_t)res + alignment - 1) / (alignment)) * alignment);
     }
     boot_size -= ((uint64_t)res - (uint64_t)boot_mem) + mem_size;
     boot_mem = res + mem_size;
