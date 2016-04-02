@@ -12,6 +12,6 @@ void pit_init() {
 
 void pit_handler() {
 
-	serial_port_write_line("tick\n");	
 	send_end_of_interrupt(1);
+	yield();
 }

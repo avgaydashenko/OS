@@ -7,6 +7,7 @@
 #include "serial_port.h"
 #include "memory_map.h"
 #include "allocator.h"
+#include "lock.h"
 
 #define CNT_PAGES 4
 
@@ -17,6 +18,8 @@ struct slabctl {
     uint16_t cnt_ref;
     struct slabctl* next;
     void* slab_list_head;
+
+    struct spinlock lock;
 };
 
 struct bufctl {

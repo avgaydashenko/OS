@@ -1,5 +1,7 @@
 #include "slab.h"
 
+static struct spinlock slab_lock;
+
 void* get_page_adr(void* adr) {
     return (void*)((uint64_t)adr&(~(PAGE_SIZE - 1)));
 }
@@ -127,12 +129,13 @@ void* slab_allocate (struct slabctl** slab_sys) {
         }
     }
 
-    //serial_port_write_line("Allocate slab: successful.\n");
-
     return ret;
 }
 
 struct slabctl** slab_init (unsigned int size, unsigned int al) {
+
+    lock(&slab_lock);
+
     if (heads == NULL) {
         heads = get_page(0);
     }
@@ -143,6 +146,8 @@ struct slabctl** slab_init (unsigned int size, unsigned int al) {
     (*head)->next = *head;
 
     serial_port_write_line("Initialise slab: successful.\n");
+
+    unlock(&slab_lock);
 
     return head;
 }

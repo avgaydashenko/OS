@@ -1,5 +1,7 @@
 #include "allocator.h"
 
+static struct spinlock allocator_lock;
+
 void allocator_init() {
 
     get_memory_map();
@@ -87,11 +89,15 @@ void rem_page(int id, int k) {
 }
 
 void* get_page(int k) {
+
+    lock(&allocator_lock);
+
     int lv = k;
     while (head[lv] == -1 && lv < max_order) {
         ++lv;
     }
     if (lv == max_order) {
+        unlock(&allocator_lock);
         return 0;
     }
     for (; lv > k; --lv) {
@@ -102,10 +108,15 @@ void* get_page(int k) {
     }
     int val = head[k];
     rem_page(head[k], k);
+
+    unlock(&allocator_lock);
     return va(val * (uint64_t)PAGE_SIZE);
 }
 
 void free_page(void* page_addr, int k) {
+
+    lock(&allocator_lock);
+
     int id = pa(page_addr)/PAGE_SIZE;
     while (1) {
         int pid = id ^ (1 << k);
@@ -118,6 +129,8 @@ void free_page(void* page_addr, int k) {
             break;
         }
     }
+
+    unlock(&allocator_lock);
 }
 
 void* get_mem(size_t mem_size, size_t alignment) {

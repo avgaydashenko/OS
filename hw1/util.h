@@ -19,4 +19,8 @@ static inline uint64_t align_up(uint64_t val, uint64_t al) {
     return val;
 }
 
+static inline void barrier() {
+    __asm__ volatile ("" : : : "memory");
+}
+
 #endif /* __UTIL_H__ */

@@ -6,6 +6,7 @@
 #include "serial_port.h"
 #include "memory.h"
 #include "util.h"
+#include "thread.h"
 
 #define PIT_PORT_CONTROL 0x43
 #define PIT_PORT_DATA	 0x40

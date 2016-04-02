@@ -6,6 +6,7 @@
 #include "memory.h"
 #include "util.h"
 #include "serial_port.h"
+#include "lock.h"
 
 #pragma pack(push, 1)
 struct page_descriptor {
