@@ -35,4 +35,7 @@ struct slabctl** slab_init (unsigned int size, unsigned int al);
 void* slab_allocate (struct slabctl** slab_sys);
 void slab_free(void *addr);
 
+void malloc_small_init();
+void* malloc_small(unsigned int size);
+
 #endif /* __SLAB_H__ */

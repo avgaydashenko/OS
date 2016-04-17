@@ -1,5 +1,7 @@
 #include "slab.h"
 
+#define MALLOC_SMALL_MAX_SIZE (1 << 8)
+
 static struct spinlock slab_lock;
 
 void* get_page_adr(void* adr) {
@@ -46,7 +48,7 @@ void* allocate(unsigned int size, unsigned int al) {
         slab_control->cnt_ref = small_slab_cnt(slab_control);
         slab_control->head=0;
 
-        descriptors[get_phys_address((virt_t)((char*)buf))].slab = slab_control;
+        descriptors[get_phys_address((virt_t)((char*)buf))/PAGE_SIZE].slab = slab_control;
 
         size_t cnt = small_slab_cnt(slab_control);
 
@@ -60,7 +62,7 @@ void* allocate(unsigned int size, unsigned int al) {
 
         struct slabctl* slab_control = (struct slabctl*)((char*)buf + CNT_PAGES * PAGE_SIZE - sizeof(struct slabctl));
         for (int i = 0; i < CNT_PAGES; ++i) {
-            descriptors[get_phys_address((virt_t)((char*)buf + i*PAGE_SIZE))].slab = slab_control;
+            descriptors[get_phys_address((virt_t)((char*)buf + i*PAGE_SIZE))/PAGE_SIZE].slab = slab_control;
         }
 
         slab_control->alignment = al;
@@ -92,18 +94,20 @@ void* allocate_block(struct slabctl* slab) {
 
 void slab_free(void *addr) {
     void* pg_addr = get_page_adr(addr);
-    struct slabctl* sl = descriptors[get_phys_address((virt_t)pg_addr)].slab;
-    int id;
+    struct slabctl* sl = descriptors[get_phys_address((virt_t)pg_addr)/PAGE_SIZE].slab;
+
+    start_critical_section();
+    uint16_t id;
     if (sl->block_size * 8 > PAGE_SIZE) {
         uint64_t start_page_adr = align_up((uint64_t)get_page_adr(sl)-(CNT_PAGES - 1)*PAGE_SIZE, sl->alignment);
         uint64_t buffsize = get_buffsize(sl);
 
-        id = (int)(((uint64_t)addr - start_page_adr)/buffsize);
+        id = (uint16_t)(((uint64_t)addr - start_page_adr)/buffsize);
     } else {
         uint64_t start_page_adr = align_up((uint64_t)get_page_adr(sl), sl->alignment);
         uint64_t buffsize = get_buffsize(sl);
 
-        id = (int)(((uint64_t)addr - start_page_adr)/buffsize);
+        id = (uint16_t)(((uint64_t)addr - start_page_adr)/buffsize);
     }
     *((uint16_t*)addr) = sl->head;
     sl->head = id;
@@ -112,8 +116,7 @@ void slab_free(void *addr) {
         sl->next = *((struct slabctl**)sl->slab_list_head);
         *((struct slabctl**)sl->slab_list_head) = sl;
     }
-
-    serial_port_write_line("Free slab: successful.\n");
+    end_critical_section();
 }
 
 void* slab_allocate (struct slabctl** slab_sys) {
@@ -145,9 +148,19 @@ struct slabctl** slab_init (unsigned int size, unsigned int al) {
     (*head)->slab_list_head = head;
     (*head)->next = *head;
 
-    serial_port_write_line("Initialise slab: successful.\n");
-
     unlock(&slab_lock);
 
     return head;
+}
+
+struct slabctl** small_slabs[MALLOC_SMALL_MAX_SIZE];
+
+void malloc_small_init() {
+    for (unsigned i = 1; i < MALLOC_SMALL_MAX_SIZE; ++i) {
+        small_slabs[i] = slab_init(i, 1);
+    }
+}
+
+void* malloc_small (unsigned int size) {
+    return slab_allocate(small_slabs[size]);
 }

@@ -7,6 +7,8 @@
 #include "slab.h"
 #include "thread.h"
 #include "test.h"
+#include "file_system.h"
+#include "initramfs.h"
 
 void main(void) {
 
@@ -15,13 +17,9 @@ void main(void) {
 	serial_port_init();
 	allocator_init();
 	map_init();
+	malloc_small_init();
 
     thread_pool_init();
-
-    test_switch_and_arg();
-    test_finish();
-    test_lock();
-    test_join();
 
 	interrupt_init();
 	idt_init();
@@ -29,10 +27,11 @@ void main(void) {
 	pit_init();
 	set_interrupt_enable_flag();
 
-	end_critical_section();
+    file_system_init();
+    initramfs_to_fs();
+    file_system_print();
 
-    //test_timer_interrupt();
-    test_slab();
+	end_critical_section();
 
 	while(1);	
 }

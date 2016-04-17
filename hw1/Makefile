@@ -10,7 +10,7 @@ ASM := bootstrap.S videomem.S handlers.S thread_handlers.S
 AOBJ:= $(ASM:.S=.o)
 ADEP:= $(ASM:.S=.d)
 
-SRC := main.c serial_port.c interrupt.c pit.c memory_map.c allocator.c paging.c slab.c thread.c lock.c test.c
+SRC := main.c serial_port.c interrupt.c pit.c memory_map.c allocator.c paging.c slab.c thread.c lock.c test.c file_system.c initramfs.c
 OBJ := $(AOBJ) $(SRC:.c=.o)
 DEP := $(ADEP) $(SRC:.c=.d)
 
